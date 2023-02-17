@@ -20,5 +20,7 @@ libraryDependencies ++= Seq(
   // Scalaj HTTP
   "org.scalaj" % "scalaj-http_2.11" % "2.4.2",
   // Scopt
-  "com.github.scopt" %% "scopt" % "4.1.0"
+  "com.github.scopt" %% "scopt" % "4.1.0",
+  //Postgresql
+  "postgresql" % "postgresql" % "9.1-901.jdbc4"
 )
