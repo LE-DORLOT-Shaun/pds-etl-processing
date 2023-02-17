@@ -23,4 +23,7 @@ libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "4.1.0",
   //Postgresql
   "postgresql" % "postgresql" % "9.1-901.jdbc4"
+
 )
+unmanagedJars in Compile ++= Seq(new java.io.File("/home/hc-name-node/projects/pds-etl-processing/jars/postgresql-42.5.4.jar")).classpath
+unmanagedJars in Runtime ++= Seq(new java.io.File("/home/hc-name-node/projects/pds-etl-processing/jars/postgresql-42.5.4.jar")).classpath
