@@ -6,6 +6,7 @@ object Main {
     transformDataBronze()
     println("FROM BRONZE TO SILVER")
     transformDataSilver()
+    println("TEST >REGARFE")
     test()
   }
 }

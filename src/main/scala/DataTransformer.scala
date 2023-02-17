@@ -10,9 +10,9 @@ import scala.util.{Failure, Success, Try}
  */
 object DataTransformer {
   val sparkHost: String = "local"
-  val hdfsRawPath: String = "hdfs://172.31.250.202:9000/raw/locaux"
-  val hdfsBronzePath: String = "hdfs://172.31.250.202:9000/bronze/locaux"
-  val hdfsSilverPath: String = "hdfs://172.31.250.202:9000/silver/locaux"
+  val hdfsRawPath: String = "hdfs://192.168.1.2:9000/raw/locaux"
+  val hdfsBronzePath: String = "hdfs://192.168.1.2:9000/bronze/locaux"
+  val hdfsSilverPath: String = "hdfs://192.168.1.2:9000/silver/locaux"
 
   // Spark Session
   val sparkSession: SparkSession = SparkSession
@@ -167,8 +167,6 @@ object DataTransformer {
   }
 
   def test(): Unit = {
-    val currentDate = DateTimeFormatter.ofPattern("YYYY-MM-dd").format(java.time.LocalDate.now)
-    val hdfsIp = System.getenv("IP_HDFS")
     val getResa = hdfsRawPath.concat("/")
 
     try {
