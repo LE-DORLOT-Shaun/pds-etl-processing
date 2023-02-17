@@ -1,4 +1,4 @@
-import DataTransformer.{transformDataSilver, transformDataBronze}
+import DataTransformer.{test, transformDataBronze, transformDataSilver}
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -6,5 +6,6 @@ object Main {
     transformDataBronze()
     println("FROM BRONZE TO SILVER")
     transformDataSilver()
+    test()
   }
 }

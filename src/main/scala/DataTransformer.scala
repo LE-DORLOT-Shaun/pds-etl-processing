@@ -1,16 +1,18 @@
 import org.apache.spark.sql.functions.{col, when}
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
+import java.time.format.DateTimeFormatter
+import java.util.Properties
 import scala.util.{Failure, Success, Try}
 
 /**
  * The aim of this class is to encapsulate the logic responsible for reading/writing the data of a given csv file
  */
 object DataTransformer {
-  val sparkHost : String = "local"
-  val hdfsRawPath : String = "hdfs://192.168.1.2:9000/raw/locaux"
-  val hdfsBronzePath : String = "hdfs://192.168.1.2:9000/bronze/locaux"
-  val hdfsSilverPath : String = "hdfs://192.168.1.2:9000/silver/locaux"
+  val sparkHost: String = "local"
+  val hdfsRawPath: String = "hdfs://172.31.250.202:9000/raw/locaux"
+  val hdfsBronzePath: String = "hdfs://172.31.250.202:9000/bronze/locaux"
+  val hdfsSilverPath: String = "hdfs://172.31.250.202:9000/silver/locaux"
 
   // Spark Session
   val sparkSession: SparkSession = SparkSession
@@ -30,7 +32,7 @@ object DataTransformer {
     sparkSession.sparkContext.setLogLevel("ERROR")
 
     // Load data from HDFS
-    try{
+    try {
       // First Iteration
       val df = sparkSession.read.parquet(hdfsRawPath)
 
@@ -41,11 +43,11 @@ object DataTransformer {
           "tolls_amount", "improvement_surcharge", "total_amount", "congestion_surcharge",
           "airport_fee")
         // Rename columns names
-        .withColumnRenamed("VendorID" , "RoomId")
-        .withColumnRenamed("tpep_pickup_datetime" , "start_time")
-        .withColumnRenamed("tpep_dropoff_datetime" , "end_time")
-        .withColumnRenamed("passenger_count" , "nb_persons")
-        .withColumnRenamed("trip_distance" , "mult_factor")
+        .withColumnRenamed("VendorID", "RoomId")
+        .withColumnRenamed("tpep_pickup_datetime", "start_time")
+        .withColumnRenamed("tpep_dropoff_datetime", "end_time")
+        .withColumnRenamed("passenger_count", "nb_persons")
+        .withColumnRenamed("trip_distance", "mult_factor")
 
       df_bronze.show(20)
 
@@ -144,7 +146,7 @@ object DataTransformer {
 
   }
 
-  def writeParquetToHDFS(hdfsPath: String, df : DataFrame): Boolean = {
+  def writeParquetToHDFS(hdfsPath: String, df: DataFrame): Boolean = {
     println(s"${"-" * 25} SAVING FILE STARTED ${"-" * 25}")
 
     sparkSession.sparkContext.setLogLevel("ERROR")
@@ -161,6 +163,24 @@ object DataTransformer {
       case e: Throwable =>
         println(s"error while saving data: ${e.getMessage}")
         false
+    }
+  }
+
+  def test(): Unit = {
+    val currentDate = DateTimeFormatter.ofPattern("YYYY-MM-dd").format(java.time.LocalDate.now)
+    val hdfsIp = System.getenv("IP_HDFS")
+    val getResa = hdfsRawPath.concat("/")
+
+    try {
+      val resa = sparkSession.read.parquet(getResa)
+      val prop = new Properties()
+      prop.setProperty("user", "kamikazes")
+      prop.setProperty("password", "dodo")
+      resa.write.mode("append").option("driver", "com.postgresql.jdbc.Driver").jdbc(s"jdbc:postgresql://192.168.1.17:5432/company", "dwp_reservation", prop)
+    } catch {
+      case e: org.apache.spark.sql.AnalysisException => {
+        println("No file found in this path")
+      }
     }
   }
 }
